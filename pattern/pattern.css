@@ -1,0 +1,74 @@
+/* =========================================================================
+   PATTERN WEAVER — pattern.css
+   Tool-specific styles. Loads on top of ../style.css (shared base).
+   ========================================================================= */
+
+/* ============ CANVAS AREA ============ */
+#canvasArea{
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+  position: relative;
+  overflow: hidden;
+}
+
+#previewWrap{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  max-height: 60vh;
+}
+
+#patternCanvas{
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  background: #000;
+}
+
+/* ============ CONTROL GROUPS ============ */
+#controls{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 12px;
+}
+
+.group{
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.groupTitle{
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 800;
+  color: var(--accent-bright);
+  padding: 10px 14px;
+  background: var(--panel-2);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Style-specific groups animate in softly when revealed */
+.styleGroup{
+  transition: opacity 0.2s ease;
+}
+
+.styleGroup.hidden{
+  display: none !important;
+}
