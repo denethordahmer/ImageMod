@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>ASCII Engine — Art Engine</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="ascii.css">
+</head>
+<body>
+
+<div class="toolApp">
+
+  <header class="toolTopBar">
+    <a href="../" class="toolBack">‹ Back</a>
+    <h1 class="toolTitle">ASCII Engine</h1>
+    <button id="btnUploadTop" class="toolAction">New Image</button>
+  </header>
+
+  <main class="toolView">
+
+    <!-- ============ CANVAS / PREVIEW ============ -->
+    <section id="canvasArea">
+
+      <div id="emptyState">
+        <input type="file" id="fileInput" accept="image/*" hidden>
+        <button id="btnChooseImage" class="bigAction">Upload Image</button>
+        <p class="hint">Tap to pick a photo from your device</p>
+      </div>
+
+      <div id="previewWrap" class="hidden">
+        <canvas id="previewCanvas"></canvas>
+      </div>
+
+    </section>
+
+    <!-- ============ CONTROLS ============ -->
+    <section id="controls">
+
+      <!-- RESOLUTION -->
+      <div class="group">
+        <div class="groupTitle">Resolution</div>
+
+        <div class="fieldRow">
+          <label for="detailLevel">Detail Level</label>
+          <select id="detailLevel">
+            <option value="very-low">Very Low (coarse)</option>
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+            <option value="very-high">Very High</option>
+            <option value="extreme">Extreme (fine grain)</option>
+          </select>
+        </div>
+
+        <div class="fieldRow">
+          <label for="charShape">Character Shape</label>
+          <select id="charShape">
+            <option value="tall" selected>Tall (classic ASCII)</option>
+            <option value="square">Square</option>
+            <option value="wide">Wide</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- TONE -->
+      <div class="group">
+        <div class="groupTitle">Tone</div>
+
+        <div class="sliderRow">
+          <div class="sliderTop">
+            <label for="brightness">Brightness</label>
+            <span class="val" id="valBrightness">0</span>
+          </div>
+          <input type="range" id="brightness" min="-100" max="100" step="1" value="0">
+        </div>
+
+        <div class="sliderRow">
+          <div class="sliderTop">
+            <label for="contrast">Contrast</label>
+            <span class="val" id="valContrast">0</span>
+          </div>
+          <input type="range" id="contrast" min="-100" max="100" step="1" value="0">
+        </div>
+
+        <div class="sliderRow">
+          <div class="sliderTop">
+            <label for="gamma">Gamma</label>
+            <span class="val" id="valGamma">1.00</span>
+          </div>
+          <input type="range" id="gamma" min="0.30" max="2.50" step="0.01" value="1.00">
+        </div>
+
+        <div class="fieldRow">
+          <label for="invert">Invert</label>
+          <select id="invert">
+            <option value="off" selected>Off (dark on light)</option>
+            <option value="on">On (light on dark)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- SYMBOL SET -->
+      <div class="group">
+        <div class="groupTitle">Symbol Set</div>
+
+        <div class="fieldRow">
+          <label for="rampPreset">Ramp Preset</label>
+          <select id="rampPreset">
+            <option value="standard" selected>Standard  ( .:-=+*#%@ )</option>
+            <option value="dense">Dense (60+ characters)</option>
+            <option value="blocks">Blocks ( ░▒▓█ )</option>
+            <option value="katakana">Katakana</option>
+            <option value="braille">Braille</option>
+            <option value="minimal">Minimal ( .:*# )</option>
+            <option value="photo">Photo (fine gradation)</option>
+            <option value="letters">Letters (a–Z)</option>
+            <option value="symbols">Symbols (!@#$%^&*)</option>
+            <option value="custom">Custom…</option>
+          </select>
+        </div>
+
+        <div class="fieldRow" id="customRampRow" style="display:none;">
+          <label for="customRamp">Custom Ramp</label>
+          <input type="text" id="customRamp" placeholder=" .:-=+*#%@" value=" .:-=+*#%@">
+        </div>
+
+        <div class="sliderRow">
+          <div class="sliderTop">
+            <label for="weighting">Ramp Balance</label>
+            <span class="val" id="valWeighting">0</span>
+          </div>
+          <input type="range" id="weighting" min="-50" max="50" step="1" value="0">
+        </div>
+      </div>
+
+      <!-- DETAIL PROCESSING -->
+      <div class="group">
+        <div class="groupTitle">Detail Processing</div>
+
+        <div class="fieldRow">
+          <label for="edgeEnhance">Edge Enhancement</label>
+          <select id="edgeEnhance">
+            <option value="off">Off</option>
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+
+        <div class="fieldRow">
+          <label for="dithering">Dithering</label>
+          <select id="dithering">
+            <option value="off" selected>Off (crisp)</option>
+            <option value="on">On (smooth gradients)</option>
+          </select>
+        </div>
+
+        <div class="fieldRow">
+          <label for="adaptive">Adaptive Sampling</label>
+          <select id="adaptive">
+            <option value="off" selected>Off</option>
+            <option value="on">On (finer detail in busy areas)</option>
+          </select>
+        </div>
+
+        <div class="sliderRow">
+          <div class="sliderTop">
+            <label for="sharpness">Sharpness</label>
+            <span class="val" id="valSharpness">0</span>
+          </div>
+          <input type="range" id="sharpness" min="0" max="100" step="1" value="0">
+        </div>
+
+        <div class="sliderRow">
+          <div class="sliderTop">
+            <label for="noiseReduction">Noise Reduction</label>
+            <span class="val" id="valNoiseReduction">0</span>
+          </div>
+          <input type="range" id="noiseReduction" min="0" max="100" step="1" value="0">
+        </div>
+      </div>
+
+      <!-- COLOR -->
+      <div class="group">
+        <div class="groupTitle">Color</div>
+
+        <div class="fieldRow">
+          <label for="colorMode">Color Mode</label>
+          <select id="colorMode">
+            <option value="mono" selected>Monochrome</option>
+            <option value="colored">Colored ASCII</option>
+            <option value="duotone">Duotone</option>
+          </select>
+        </div>
+
+        <div class="fieldRow">
+          <label for="theme">Theme</label>
+          <select id="theme">
+            <option value="neutral" selected>Neutral (white on black)</option>
+            <option value="terminal">Terminal (green on black)</option>
+            <option value="amber">Amber (amber on black)</option>
+            <option value="paper">Paper (black on white)</option>
+            <option value="crimson">Crimson (red on black)</option>
+            <option value="custom">Custom…</option>
+          </select>
+        </div>
+
+        <div class="fieldRow" id="charColorRow" style="display:none;">
+          <label for="charColor">Character Color</label>
+          <input type="color" id="charColor" value="#e6e8f0">
+        </div>
+
+        <div class="fieldRow" id="bgColorRow" style="display:none;">
+          <label for="bgColor">Background Color</label>
+          <input type="color" id="bgColor" value="#07080d">
+        </div>
+
+        <div class="sliderRow" id="saturationRow" style="display:none;">
+          <div class="sliderTop">
+            <label for="saturation">Color Saturation</label>
+            <span class="val" id="valSaturation">100</span>
+          </div>
+          <input type="range" id="saturation" min="0" max="200" step="1" value="100">
+        </div>
+      </div>
+
+      <!-- FONT -->
+      <div class="group">
+        <div class="groupTitle">Font</div>
+
+        <div class="fieldRow">
+          <label for="fontFamily">Font Family</label>
+          <select id="fontFamily">
+            <option value="'Courier New', monospace" selected>Courier</option>
+            <option value="Consolas, monospace">Consolas</option>
+            <option value="Menlo, monospace">Menlo</option>
+            <option value="monospace">System Monospace</option>
+          </select>
+        </div>
+
+        <div class="sliderRow">
+          <div class="sliderTop">
+            <label for="fontSize">Font Size</label>
+            <span class="val" id="valFontSize">10</span>
+          </div>
+          <input type="range" id="fontSize" min="6" max="24" step="1" value="10">
+        </div>
+
+        <div class="sliderRow">
+          <div class="sliderTop">
+            <label for="lineSpacing">Line Spacing</label>
+            <span class="val" id="valLineSpacing">1.00</span>
+          </div>
+          <input type="range" id="lineSpacing" min="0.80" max="1.40" step="0.01" value="1.00">
+        </div>
+
+        <div class="fieldRow">
+          <label for="bold">Bold</label>
+          <select id="bold">
+            <option value="off" selected>Off</option>
+            <option value="on">On</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- EXPORT -->
+      <div class="group">
+        <div class="groupTitle">Export</div>
+
+        <div class="fieldRow">
+          <label for="exportScale">Output Quality</label>
+          <select id="exportScale">
+            <option value="1">1x (small file)</option>
+            <option value="2" selected>2x (recommended)</option>
+            <option value="4">4x (high res)</option>
+          </select>
+        </div>
+
+        <div class="fieldRow">
+          <label for="exportBg">Background</label>
+          <select id="exportBg">
+            <option value="solid" selected>Solid</option>
+            <option value="transparent">Transparent</option>
+          </select>
+        </div>
+
+        <div class="fieldRow">
+          <label for="exportName">Filename</label>
+          <input type="text" id="exportName" value="ascii-art" placeholder="ascii-art">
+        </div>
+      </div>
+
+      <!-- PRESETS -->
+      <div class="group">
+        <div class="groupTitle">Presets</div>
+
+        <div class="fieldRow">
+          <label for="presetList">Saved Presets</label>
+          <select id="presetList">
+            <option value="">— none —</option>
+          </select>
+        </div>
+
+        <div class="fieldRow btnRow">
+          <button id="btnSavePreset" class="smallBtn">Save Current</button>
+          <button id="btnLoadPreset" class="smallBtn">Load</button>
+          <button id="btnDeletePreset" class="smallBtn danger">Delete</button>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ============ EXPORT BAR ============ -->
+  <footer class="exportBar">
+    <button id="btnExportPng" class="exportBtn primary">PNG</button>
+    <button id="btnExportJpg" class="exportBtn">JPG</button>
+    <button id="btnCopyText" class="exportBtn">Copy Text</button>
+  </footer>
+
+</div>
+
+<script src="ascii.js"></script>
+</body>
+</html>
