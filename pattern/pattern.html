@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Pattern Weaver — Art Engine</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="pattern.css">
+</head>
+<body>
+
+<div class="toolApp">
+
+  <header class="toolTopBar">
+    <a href="../" class="toolBack">‹ Back</a>
+    <h1 class="toolTitle">Pattern Weaver</h1>
+    <button id="btnRandomizeTop" class="toolAction">Randomize</button>
+  </header>
+
+  <main class="toolView">
+
+    <!-- ============ CANVAS ============ -->
+    <section id="canvasArea">
+      <div id="previewWrap">
+        <canvas id="patternCanvas"></canvas>
+      </div>
+    </section>
+
+    <!-- ============ CONTROLS ============ -->
+    <section id="controls">
+
+      <!-- STYLE -->
+      <div class="group">
+        <div class="groupTitle">Style</div>
+
+        <div class="fieldRow">
+          <label for="patternStyle">Pattern Style</label>
+          <select id="patternStyle">
+            <option value="islamic" selected>Islamic Geometry</option>
+            <option value="celtic">Celtic Knotwork</option>
+            <option value="motif">Repeating Motif</option>
+            <option value="procedural">Procedural Rules</option>
+          </select>
+        </div>
+
+        <div class="fieldRow">
+          <label for="seed">Seed</label>
+          <input type="text" id="seed" value="vorifex" placeholder="type anything">
+        </div>
+
+        <div class="fieldRow btnRow">
+          <button id="btnRandomizeSeed" class="smallBtn">New Seed</button>
+          <button id="btnRandomizeAll" class="smallBtn">Randomize All</button>
+        </div>
+      </div>
+
+      <!-- PALETTE -->
+      <div class="group">
+        <div class="groupTitle">Palette</div>
+
+        <div class="fieldRow">
+          <label for="palette">Palette Preset</label>
+          <select id="palette">
+            <option value="mono" selected>Monochrome</option>
+            <option value="duotone">Duotone</option>
+            <option value="triad">Triad</option>
+            <option value="warm">Warm</option>
+            <option value="cool">Cool</option>
+            <option value="neon">Neon</option>
+            <option value="earthy">Earthy</option>
+            <option value="custom">Custom…</option>
+          </select>
+        </div>
+
+        <div class="fieldRow" id="primaryColorRow">
+          <label for="primaryColor">Primary</label>
+          <input type="color" id="primaryColor" value="#7c5cff">
+        </div>
+
+        <div class="fieldRow" id="secondaryColorRow">
+          <label for="secondaryColor">Secondary</label>
+          <input type="color" id="secondaryColor" value="#ffd257">
+        </div>
+
+        <div class="fieldRow" id="accentColorRow">
+          <label for="accentColor">Accent</label>
+          <input type="color" id="accentColor" value="#eef0f7">
+        </div>
+
+        <div class="fieldRow">
+          <label for="bgColor">Background</label>
+          <input type="color" id="bgColor" value="#07080d">
+        </div>
+      </div>
+
+      <!-- COMPOSITION -->
+      <div class="group">
+        <div class="groupTitle">Composition</div>
+
+        <div class="fieldRow">
+          <label for="symmetry">Symmetry</label>
+          <select id="symmetry">
+            <option value="4">4-fold</option>
+            <option value="6" selected>6-fold</option>
+            <option value="8">8-fold</option>
+            <option value="12">12-fold</option>
+            <option value="16">16-fold</option>
+            <option value="24">24-fold</option>
+          </select>
+        </div>
+
+        <div class="sliderRow">
+          <div class="sliderTop">
+            <label for="scale">Scale</label>
+            <span class="val" id="valScale">1.00</span>
+          </div>
+          <input type="range" id="scale" min="0.30" max="3.00" step="0.01" value="1.00">
+        </div>
+
+        <div class="sliderRow">
+          <div class="sliderTop">
+            <label for="density">Density</label>
+            <span class="val" id="valDensity">50</span>
+          </div>
+          <input type="range" id="density" min="0" max="100" step="1" value="50">
+        </div>
+
+        <div class="sliderRow">
+          <div class="sliderTop">
+            <label for="lineWeight">Line Weight</label>
+            <span class="val" id="valLineWeight">4</span>
+          </div>
+          <input type="range" id="lineWeight" min="1" max="20" step="1" value="4">
+        </div>
+
+        <div class="fieldRow">
+          <label for="rotation">Rotation</label>
+          <select id="rotation">
+            <option value="0" selected>0°</option>
+            <option value="15">15°</option>
+            <option value="30">30°</option>
+            <option value="45">45°</option>
+            <option value="90">90°</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- STYLE-SPECIFIC: ISLAMIC -->
+      <div class="group styleGroup" id="styleIslamic">
+        <div class="groupTitle">Islamic Geometry</div>
+
+        <div class="fieldRow">
+          <label for="starPoints">Star Points</label>
+          <select id="starPoints">
+            <option value="6">6-point</option>
+            <option value="8" selected>8-point</option>
+            <option value="10">10-point</option>
+            <option value="12">12-point</option>
+          </select>
+        </div>
+
+        <div class="fieldRow">
+          <label for="ringCount">Ring Count</label>
+          <select id="ringCount">
+            <option value="2">2 rings</option>
+            <option value="3" selected>3 rings</option>
+            <option value="4">4 rings</option>
+            <option value="5">5 rings</option>
+          </select>
+        </div>
+
+        <div class="fieldRow">
+          <label for="tessellation">Tessellation</label>
+          <select id="tessellation">
+            <option value="star" selected>Star focus</option>
+            <option value="polygon">Polygon focus</option>
+            <option value="mixed">Mixed</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- STYLE-SPECIFIC: CELTIC -->
+      <div class="group styleGroup hidden" id="styleCeltic">
+        <div class="groupTitle">Celtic Knotwork</div>
+
+        <div class="fieldRow">
+          <label for="weaveStyle">Weave Style</label>
+          <select id="weaveStyle">
+            <option value="over">Over-under</option>
+            <option value="balanced" selected>Balanced</option>
+            <option value="dense">Dense</option>
+          </select>
+        </div>
+
+        <div class="fieldRow">
+          <label for="loopCount">Loop Count</label>
+          <select id="loopCount">
+            <option value="2">2 loops</option>
+            <option value="3" selected>3 loops</option>
+            <option value="4">4 loops</option>
+            <option value="5">5 loops</option>
+          </select>
+        </div>
+
+        <div class="fieldRow">
+          <label for="ribbonWidth">Ribbon Width</label>
+          <select id="ribbonWidth">
+            <option value="thin">Thin</option>
+            <option value="medium" selected>Medium</option>
+            <option value="thick">Thick</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- STYLE-SPECIFIC: MOTIF -->
+      <div class="group styleGroup hidden" id="styleMotif">
+        <div class="groupTitle">Repeating Motif</div>
+
+        <div class="fieldRow">
+          <label for="motifType">Motif Type</label>
+          <select id="motifType">
+            <option value="dot" selected>Dot</option>
+            <option value="diamond">Diamond</option>
+            <option value="petal">Petal</option>
+            <option value="arrow">Arrow</option>
+            <option value="eye">Eye</option>
+          </select>
+        </div>
+
+        <div class="fieldRow">
+          <label for="tileRotation">Tile Rotation</label>
+          <select id="tileRotation">
+            <option value="0">None</option>
+            <option value="90" selected>90° per tile</option>
+            <option value="180">180° per tile</option>
+            <option value="mirror">Mirror</option>
+          </select>
+        </div>
+
+        <div class="fieldRow">
+          <label for="tileOffset">Tile Offset</label>
+          <select id="tileOffset">
+            <option value="none" selected>None</option>
+            <option value="brick">Brick</option>
+            <option value="diagonal">Diagonal</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- STYLE-SPECIFIC: PROCEDURAL -->
+      <div class="group styleGroup hidden" id="styleProcedural">
+        <div class="groupTitle">Procedural Rules</div>
+
+        <div class="fieldRow">
+          <label for="ruleSet">Rule Set</label>
+          <select id="ruleSet">
+            <option value="truchet" selected>Truchet Tiles</option>
+            <option value="cellular">Cellular Growth</option>
+            <option value="flow">Flow Field</option>
+            <option value="branch">Branching</option>
+          </select>
+        </div>
+
+        <div class="sliderRow">
+          <div class="sliderTop">
+            <label for="mutationRate">Mutation Rate</label>
+            <span class="val" id="valMutationRate">10</span>
+          </div>
+          <input type="range" id="mutationRate" min="0" max="100" step="1" value="10">
+        </div>
+
+        <div class="fieldRow">
+          <label for="growthSteps">Growth Steps</label>
+          <select id="growthSteps">
+            <option value="3">3 steps</option>
+            <option value="5" selected>5 steps</option>
+            <option value="8">8 steps</option>
+            <option value="12">12 steps</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- EXPORT -->
+      <div class="group">
+        <div class="groupTitle">Export</div>
+
+        <div class="fieldRow">
+          <label for="exportScale">Output Quality</label>
+          <select id="exportScale">
+            <option value="1">1x (small file)</option>
+            <option value="2" selected>2x (recommended)</option>
+            <option value="4">4x (high res)</option>
+          </select>
+        </div>
+
+        <div class="fieldRow">
+          <label for="exportBg">Background</label>
+          <select id="exportBg">
+            <option value="solid" selected>Solid</option>
+            <option value="transparent">Transparent</option>
+          </select>
+        </div>
+
+        <div class="fieldRow">
+          <label for="exportName">Filename</label>
+          <input type="text" id="exportName" value="pattern" placeholder="pattern">
+        </div>
+      </div>
+
+      <!-- PRESETS -->
+      <div class="group">
+        <div class="groupTitle">Presets</div>
+
+        <div class="fieldRow">
+          <label for="presetList">Saved Presets</label>
+          <select id="presetList">
+            <option value="">— none —</option>
+          </select>
+        </div>
+
+        <div class="fieldRow btnRow">
+          <button id="btnSavePreset" class="smallBtn">Save Current</button>
+          <button id="btnLoadPreset" class="smallBtn">Load</button>
+          <button id="btnDeletePreset" class="smallBtn danger">Delete</button>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ============ EXPORT BAR ============ -->
+  <footer class="exportBar">
+    <button id="btnExportPng" class="exportBtn primary">PNG</button>
+    <button id="btnExportJpg" class="exportBtn">JPG</button>
+    <button id="btnCopySeed" class="exportBtn">Copy Seed</button>
+  </footer>
+
+</div>
+
+<script src="pattern.js"></script>
+</body>
+</html>
