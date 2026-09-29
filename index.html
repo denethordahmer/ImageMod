@@ -26,54 +26,13 @@
       <div class="toolArrow">›</div>
     </a>
 
-    <a href="kaleidoscope/kaleidoscope.html" class="toolCard soon">
-      <div class="toolIcon">✻</div>
-      <div class="toolMeta">
-        <h2>Kaleidoscope</h2>
-        <p>Mirror, rotate, and multiply any image into endless symmetrical patterns.</p>
-      </div>
-      <div class="toolArrow">›</div>
-      <span class="soonBadge">Soon</span>
-    </a>
-
-    <a href="pixel/pixel.html" class="toolCard soon">
-      <div class="toolIcon">▦</div>
-      <div class="toolMeta">
-        <h2>Pixel Studio</h2>
-        <p>Draw and edit pixel art with layers, palettes, and animation frames.</p>
-      </div>
-      <div class="toolArrow">›</div>
-      <span class="soonBadge">Soon</span>
-    </a>
-
-    <a href="pattern/pattern.html" class="toolCard soon">
+    <a href="pattern/pattern.html" class="toolCard">
       <div class="toolIcon">◈</div>
       <div class="toolMeta">
         <h2>Pattern Weaver</h2>
-        <p>Generate endless repeating patterns, wallpapers, and tilework.</p>
+        <p>Generate Islamic geometry, Celtic knots, repeating motifs, and procedural patterns.</p>
       </div>
       <div class="toolArrow">›</div>
-      <span class="soonBadge">Soon</span>
-    </a>
-
-    <a href="sigil/sigil.html" class="toolCard soon">
-      <div class="toolIcon">✧</div>
-      <div class="toolMeta">
-        <h2>Sigil Forge</h2>
-        <p>Type a phrase, receive a unique symmetrical symbol.</p>
-      </div>
-      <div class="toolArrow">›</div>
-      <span class="soonBadge">Soon</span>
-    </a>
-
-    <a href="mandala/mandala.html" class="toolCard soon">
-      <div class="toolIcon">❋</div>
-      <div class="toolMeta">
-        <h2>Mandala Generator</h2>
-        <p>Radial symmetry patterns with adjustable petals, rings, and palettes.</p>
-      </div>
-      <div class="toolArrow">›</div>
-      <span class="soonBadge">Soon</span>
     </a>
 
   </main>
@@ -83,22 +42,6 @@
   </footer>
 
 </div>
-
-<script>
-  /* Mark any tool card as "coming soon" — clicking it should not navigate */
-  document.querySelectorAll(".toolCard.soon").forEach(card => {
-    card.addEventListener("click", (e) => {
-      e.preventDefault();
-      const name = card.querySelector("h2").textContent;
-      const status = document.getElementById("hubStatus");
-      status.textContent = `${name} is not ready yet`;
-      clearTimeout(window.__hubStatusTimer);
-      window.__hubStatusTimer = setTimeout(() => {
-        status.textContent = "Ready";
-      }, 1800);
-    });
-  });
-</script>
 
 </body>
 </html>
