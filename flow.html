@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Flow Field — Art Engine</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="flow.css">
+</head>
+<body>
+
+<div class="toolApp">
+
+  <div class="toolTopBar">
+    <button class="toolBack" onclick="location.href='../index.html'">‹ Back</button>
+    <h1 class="toolTitle">Flow Field</h1>
+    <button class="toolAction" id="btnRandomize" title="Random seed">⟳</button>
+  </div>
+
+  <div class="flowPreview">
+    <canvas id="flowCanvas"></canvas>
+  </div>
+
+  <div class="toolView">
+
+    <div class="flowSection">Flow</div>
+
+    <div class="sliderRow">
+      <div class="sliderTop"><label>Particles</label><span class="val" id="particlesVal">1200</span></div>
+      <input type="range" id="particles" min="150" max="4000" step="50" value="1200">
+    </div>
+
+    <div class="sliderRow">
+      <div class="sliderTop"><label>Flow length</label><span class="val" id="stepsVal">60</span></div>
+      <input type="range" id="steps" min="10" max="250" step="5" value="60">
+    </div>
+
+    <div class="sliderRow">
+      <div class="sliderTop"><label>Step size</label><span class="val" id="stepSizeVal">3</span></div>
+      <input type="range" id="stepSize" min="1" max="12" step="1" value="3">
+    </div>
+
+    <div class="sliderRow">
+      <div class="sliderTop"><label>Feature size</label><span class="val" id="featureSizeVal">70</span></div>
+      <input type="range" id="featureSize" min="1" max="100" step="1" value="70">
+    </div>
+
+    <div class="sliderRow">
+      <div class="sliderTop"><label>Bend (curl)</label><span class="val" id="curlVal">0.9</span></div>
+      <input type="range" id="curl" min="0.1" max="3" step="0.05" value="0.9">
+    </div>
+
+    <div class="flowSection">Style</div>
+
+    <div class="sliderRow">
+      <div class="sliderTop"><label>Line width</label><span class="val" id="lineWidthVal">1.3</span></div>
+      <input type="range" id="lineWidth" min="0.5" max="5" step="0.1" value="1.3">
+    </div>
+
+    <div class="sliderRow">
+      <div class="sliderTop"><label>Opacity</label><span class="val" id="opacityVal">0.5</span></div>
+      <input type="range" id="opacity" min="0.05" max="1" step="0.05" value="0.5">
+    </div>
+
+    <div class="fieldRow">
+      <label>Color mode</label>
+      <select id="colorMode">
+        <option value="solid">Solid</option>
+        <option value="gradient" selected>Gradient</option>
+        <option value="spectrum">Spectrum</option>
+      </select>
+    </div>
+
+    <div class="fieldRow">
+      <label>Color 1</label>
+      <input type="color" id="color1" value="#3b82f6">
+    </div>
+
+    <div class="fieldRow" id="color2Row">
+      <label>Color 2</label>
+      <input type="color" id="color2" value="#a855f7">
+    </div>
+
+    <div class="flowSection">Background</div>
+
+    <div class="fieldRow">
+      <label>Background</label>
+      <input type="color" id="bgColor" value="#0d0f16">
+    </div>
+
+    <div class="fieldRow">
+      <label>Transparent bg</label>
+      <input type="checkbox" id="bgTransparent">
+    </div>
+
+    <div class="flowSection">Output</div>
+
+    <div class="fieldRow">
+      <label>Size</label>
+      <select id="size">
+        <option value="square" selected>Square 1500×1500</option>
+        <option value="portrait">Portrait 900×1600</option>
+        <option value="landscape">Landscape 1600×900</option>
+        <option value="a17">Samsung A17 wallpaper 1080×2340</option>
+        <option value="desktop">Desktop wallpaper 1920×1080</option>
+      </select>
+    </div>
+
+    <div class="fieldRow">
+      <label>Seed</label>
+      <input type="number" id="seed" value="1" min="0" max="999999" inputmode="numeric">
+    </div>
+
+  </div>
+
+  <div class="exportBar">
+    <button class="exportBtn" id="btnExport">Export PNG</button>
+    <button class="exportBtn primary" id="btnGenerate">Generate</button>
+  </div>
+
+</div>
+
+<script src="flow.js"></script>
+</body>
+</html>
