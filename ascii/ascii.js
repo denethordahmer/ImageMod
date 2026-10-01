@@ -76,10 +76,8 @@
      STATE
      ======================================================================= */
   let sourceImage = null;        // HTMLImageElement
-  let sourceCanvas = null;       // offscreen canvas with the image drawn
-  let sourceCtx = null;
   let currentAscii = "";         // last generated ASCII string
-  let currentGrid = null;        // { cols, rows, chars[], colors[] } for color output
+  let currentGrid = null;        // { cols, rows, lines[], colorGrid[] } for output
   let renderTimer = null;
 
   /* =======================================================================
@@ -92,7 +90,7 @@
     katakana: " ｦｧｨｩｪｫｬｭｮｯｰｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ",
     braille:  " ⠁⠂⠃⠄⠅⠆⠇⠈⠉⠊⠋⠌⠍⠎⠏⠐⠑⠒⠓⠔⠕⠖⠗⠘⠙⠚⠛⠜⠝⠞⠟⠠⠡⠢⠣⠤⠥⠦⠧⠨⠩⠪⠫⠬⠭⠮⠯⠰⠱⠲⠳⠴⠵⠶⠷⠸⠹⠺⠻⠼⠽⠾⠿",
     minimal:  " .:*#",
-    photo:    " .'`^\",:;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$",
+    photo:    "   ..''``^^\"\",,::;;IIll!!ii>><<~~++__--??]][[}}{{11))((||\\\\//ttffjjrrxxnnuuvvcczzXXYYUUJJCCLLQQ00OOZZmmwwqqppddbbkkhhaaoo**##MMWW&&88%%BB@@$$",
     letters:  " aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ",
     symbols:  " .!@#$%^&*()_+-=[]{}|;:,.<>/?"
   };
@@ -119,12 +117,13 @@
   };
 
   /* =======================================================================
-     CHARACTER ASPECT → CELL HEIGHT MULTIPLIER
+     CHARACTER SHAPE → VERTICAL SAMPLING FACTOR
+     Lower values produce fewer rows (a wider final image).
      ======================================================================= */
   const SHAPE_ASPECT = {
     "tall":   0.55,
     "square": 0.95,
-    "wide":   0.75
+    "wide":   0.40
   };
 
   /* =======================================================================
@@ -138,20 +137,27 @@
     crimson: { char: "#ff5c6a", bg: "#0a0505" }
   };
 
-  function applyTheme() {
-    const t = theme.value;
-    if (t === "custom") {
+  /* Update theme colors and all conditional control visibility. */
+  function syncDynamicControls() {
+    // Theme custom color rows
+    if (theme.value === "custom") {
       charColorRow.style.display = "flex";
       bgColorRow.style.display = "flex";
     } else {
       charColorRow.style.display = "none";
       bgColorRow.style.display = "none";
-      const preset = THEMES[t];
+      const preset = THEMES[theme.value];
       if (preset) {
         charColor.value = preset.char;
         bgColor.value = preset.bg;
       }
     }
+
+    // Custom ramp row
+    customRampRow.style.display = rampPreset.value === "custom" ? "flex" : "none";
+
+    // Saturation row only matters in colored mode
+    saturationRow.style.display = colorMode.value === "colored" ? "block" : "none";
   }
 
   /* =======================================================================
@@ -172,7 +178,6 @@
       const img = new Image();
       img.onload = () => {
         sourceImage = img;
-        prepareSourceCanvas();
         showPreview();
         scheduleRender();
       };
@@ -184,14 +189,6 @@
     reader.readAsDataURL(file);
   });
 
-  function prepareSourceCanvas() {
-    sourceCanvas = document.createElement("canvas");
-    sourceCanvas.width = sourceImage.width;
-    sourceCanvas.height = sourceImage.height;
-    sourceCtx = sourceCanvas.getContext("2d", { willReadFrequently: true });
-    sourceCtx.drawImage(sourceImage, 0, 0);
-  }
-
   function showPreview() {
     emptyState.classList.add("hidden");
     previewWrap.classList.remove("hidden");
@@ -202,7 +199,6 @@
      ======================================================================= */
   function sampleGrid(cols, cellH) {
     const rows = Math.max(1, Math.round(sourceImage.height / cellH));
-    const cellW = sourceImage.width / cols;
     const grid = new Float32Array(cols * rows);
 
     // 1. Down-sample to a tiny canvas for speed
@@ -213,7 +209,7 @@
     sctx.drawImage(sourceImage, 0, 0, cols, rows);
     const data = sctx.getImageData(0, 0, cols, rows).data;
 
-    // 2. Compute luminance with noise reduction and adaptive tweak
+    // 2. Compute perceptual luminance
     const noiseAmt = parseInt(noiseReduction.value, 10) / 100;
     const useAdaptive = adaptive.value === "on";
 
@@ -223,9 +219,7 @@
         const r = data[i] / 255;
         const g = data[i + 1] / 255;
         const b = data[i + 2] / 255;
-        // perceptual luminance
-        let lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-        grid[y * cols + x] = lum;
+        grid[y * cols + x] = 0.2126 * r + 0.7152 * g + 0.0722 * b;
       }
     }
 
@@ -275,7 +269,7 @@
       }
     }
 
-    // 5. Adaptive sampling — knock down detail in low-variance regions
+    // 5. Adaptive sampling — reduce noise in low-variance regions
     if (useAdaptive) {
       for (let y = 1; y < rows - 1; y++) {
         for (let x = 1; x < cols - 1; x++) {
@@ -286,7 +280,6 @@
           const w = grid[y * cols + x - 1];
           const variance = Math.abs(n - s) + Math.abs(e - w);
           if (variance < 0.05) {
-            // flat region — pull toward mean
             const mean = (n + s + e + w + grid[idx]) / 5;
             grid[idx] = grid[idx] * 0.7 + mean * 0.3;
           }
@@ -301,26 +294,22 @@
      TONE ADJUSTMENTS
      ======================================================================= */
   function adjustTone(lum) {
-    // brightness: -1..1
     const b = parseInt(brightness.value, 10) / 100;
     let v = lum + b * 0.5;
 
-    // contrast: -1..1
     const c = parseInt(contrast.value, 10) / 100;
     v = (v - 0.5) * (1 + c) + 0.5;
 
-    // gamma
     const g = parseFloat(gamma.value);
     v = Math.pow(Math.max(0, Math.min(1, v)), 1 / g);
 
-    // invert
     if (invert.value === "on") v = 1 - v;
 
     return Math.max(0, Math.min(1, v));
   }
 
   /* =======================================================================
-     EDGE DETECTION (for edge enhancement)
+     EDGE DETECTION
      ======================================================================= */
   function sobelEdge(grid, cols, rows, x, y) {
     const at = (xx, yy) => {
@@ -354,16 +343,13 @@
     const weightAmt = parseInt(weighting.value, 10) / 50; // -1..1
     const edgeStrength = { off: 0, low: 0.4, medium: 0.7, high: 1.0 }[edgeEnhance.value] || 0;
     const useDither = dithering.value === "on";
-
-    // Edge chars used for edge enhancement
     const edgeChars = ["/", "\\", "|", "-", "+"];
-
-    // Build ascii
     const lines = [];
     const colorGrid = [];
     const mode = colorMode.value;
+    const satAmt = parseInt(saturation.value, 10) / 100;
 
-    // For colored output we need original colors — resample small canvas
+    // Resample original colors once for colored mode
     let colorData = null;
     if (mode === "colored") {
       const cCanvas = document.createElement("canvas");
@@ -374,22 +360,21 @@
       colorData = cctx.getImageData(0, 0, cols, rows).data;
     }
 
-    const satAmt = parseInt(saturation.value, 10) / 100;
-
     for (let y = 0; y < rows; y++) {
       let line = "";
       const colorLine = [];
+
       for (let x = 0; x < cols; x++) {
         let lum = grid[y * cols + x];
         lum = adjustTone(lum);
 
-        // weighting: bias toward start or end of ramp
+        // Bias the ramp toward its light or dark end
         if (weightAmt !== 0) {
           if (weightAmt > 0) lum = Math.pow(lum, 1 + weightAmt);
           else lum = Math.pow(lum, 1 / (1 + Math.abs(weightAmt)));
         }
 
-        // dithering — ordered bayer 4x4
+        // Ordered Bayer 4x4 dithering
         if (useDither) {
           const bayer = [
             [ 0,  8,  2, 10],
@@ -401,31 +386,26 @@
           lum += threshold / rampLen;
         }
 
-        // pick char
         let idx = Math.floor(lum * (rampLen - 1));
         idx = Math.max(0, Math.min(rampLen - 1, idx));
 
-        // edge enhancement — replaces char with line char near edges
+        // Pick the char, replacing it with a line char near strong edges
+        let ch = chars[idx];
         if (edgeStrength > 0) {
           const edge = sobelEdge(grid, cols, rows, x, y);
           if (edge > edgeStrength) {
             const eIdx = Math.floor((edge / 2) * edgeChars.length) % edgeChars.length;
-            const ec = edgeChars[Math.abs(eIdx)];
-            line += ec;
-            colorLine.push({ ch: ec, r: 220, g: 220, b: 240 });
-            continue;
+            ch = edgeChars[Math.abs(eIdx)];
           }
         }
 
-        const ch = chars[idx];
         line += ch;
 
-        if (colorData) {
+        if (mode === "colored" && colorData) {
           const ci = (y * cols + x) * 4;
           let r = colorData[ci];
           let g = colorData[ci + 1];
           let b = colorData[ci + 2];
-          // saturation adjust (simple: blend toward gray)
           if (satAmt !== 1) {
             const gray = 0.299 * r + 0.587 * g + 0.114 * b;
             r = gray + (r - gray) * satAmt;
@@ -437,6 +417,7 @@
           colorLine.push({ ch, lum });
         }
       }
+
       lines.push(line);
       colorGrid.push(colorLine);
     }
@@ -457,7 +438,6 @@
     const isBold = bold.value === "on";
     const fontStr = `${isBold ? "bold " : ""}${fontSizePx}px ${fontFamily.value}`;
 
-    // measure a char
     previewCtx.font = fontStr;
     const charW = previewCtx.measureText("M").width;
     const charH = fontSizePx * lineSpacingVal;
@@ -472,7 +452,6 @@
     previewCanvas.style.width = Math.min(w, window.innerWidth - 40) + "px";
     previewCanvas.style.height = "auto";
 
-    // background
     previewCtx.fillStyle = bgColor.value;
     previewCtx.fillRect(0, 0, w, h);
 
@@ -531,7 +510,7 @@
   }
 
   /* =======================================================================
-     SCHEDULED RE-RENDER (debounced so sliders feel smooth)
+     SCHEDULED RE-RENDER
      ======================================================================= */
   function scheduleRender() {
     if (renderTimer) clearTimeout(renderTimer);
@@ -548,7 +527,6 @@
      WIRE ALL CONTROLS
      ======================================================================= */
   function wireControls() {
-    // Sliders — update display + rerender
     const sliderPairs = [
       [brightness, valBrightness],
       [contrast, valContrast],
@@ -567,14 +545,14 @@
       });
     });
 
-    // Dropdowns — rerender on change
+    // Dropdowns — one listener each, all handled here
     [
       detailLevel, charShape, invert, rampPreset,
       edgeEnhance, dithering, adaptive, colorMode,
       theme, fontFamily, bold
     ].forEach(el => {
       el.addEventListener("change", () => {
-        onDropdownChange(el);
+        onDropdownChange();
         scheduleRender();
       });
     });
@@ -583,34 +561,12 @@
     charColor.addEventListener("input", scheduleRender);
     bgColor.addEventListener("input", scheduleRender);
 
-    // Ramp preset reveal
-    rampPreset.addEventListener("change", () => {
-      if (rampPreset.value === "custom") {
-        customRampRow.style.display = "flex";
-      } else {
-        customRampRow.style.display = "none";
-      }
-    });
+    // Custom ramp text rerenders
     customRamp.addEventListener("input", scheduleRender);
-
-    // Color mode reveal — saturation shown only for colored
-    colorMode.addEventListener("change", () => {
-      if (colorMode.value === "colored") {
-        saturationRow.style.display = "block";
-      } else {
-        saturationRow.style.display = "none";
-      }
-    });
-
-    // Theme
-    theme.addEventListener("change", applyTheme);
   }
 
-  function onDropdownChange(el) {
-    if (el === theme) applyTheme();
-    if (el === colorMode) {
-      saturationRow.style.display = (colorMode.value === "colored") ? "block" : "none";
-    }
+  function onDropdownChange() {
+    syncDynamicControls();
   }
 
   /* =======================================================================
@@ -629,7 +585,6 @@
     const isBold = bold.value === "on";
     const fontStr = `${isBold ? "bold " : ""}${fontSizePx * scale}px ${fontFamily.value}`;
 
-    // Measure at scaled size
     const tmpCtx = document.createElement("canvas").getContext("2d");
     tmpCtx.font = fontStr;
     const charW = tmpCtx.measureText("M").width;
@@ -694,7 +649,6 @@
       }
     }
 
-    // Download
     const mime = format === "jpg" ? "image/jpeg" : "image/png";
     const quality = format === "jpg" ? 0.92 : undefined;
     const dataUrl = out.toDataURL(mime, quality);
@@ -724,7 +678,6 @@
       btnCopyText.textContent = "Copied!";
       setTimeout(() => { btnCopyText.textContent = original; }, 1200);
     } catch (e) {
-      // Fallback — prompt the user
       prompt("Copy the ASCII text below:", currentAscii);
     }
   });
@@ -792,17 +745,10 @@
       const el = document.getElementById(k);
       if (!el) return;
       el.value = s[k];
-      // update display span if slider
       const span = document.getElementById("val" + k.charAt(0).toUpperCase() + k.slice(1));
       if (span && el.type === "range") span.textContent = s[k];
     });
-    onDropdownChange(theme);
-    onDropdownChange(colorMode);
-    if (rampPreset.value === "custom") {
-      customRampRow.style.display = "flex";
-    } else {
-      customRampRow.style.display = "none";
-    }
+    syncDynamicControls();
   }
 
   btnSavePreset.addEventListener("click", () => {
@@ -840,9 +786,9 @@
      ======================================================================= */
   function init() {
     wireControls();
-    applyTheme();
+    syncDynamicControls();
     refreshPresetList();
-    // Set initial value displays
+
     valBrightness.textContent = brightness.value;
     valContrast.textContent = contrast.value;
     valGamma.textContent = gamma.value;
