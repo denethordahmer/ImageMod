@@ -58,38 +58,124 @@
       <div class="group">
         <div class="groupTitle">Palette</div>
 
-        <div class="fieldRow">
-          <label for="palette">Palette Preset</label>
-          <select id="palette">
-            <option value="mono" selected>Monochrome</option>
-            <option value="duotone">Duotone</option>
-            <option value="triad">Triad</option>
-            <option value="warm">Warm</option>
-            <option value="cool">Cool</option>
-            <option value="neon">Neon</option>
-            <option value="earthy">Earthy</option>
-            <option value="custom">Custom…</option>
-          </select>
+        <!-- Harmony generator -->
+        <div class="subSection">
+          <div class="subTitle">Harmony Generator</div>
+
+          <div class="fieldRow">
+            <label for="harmonyBase">Base Color</label>
+            <input type="color" id="harmonyBase" value="#7c5cff">
+          </div>
+
+          <div class="fieldRow">
+            <label for="harmonyRule">Rule</label>
+            <select id="harmonyRule">
+              <option value="complementary" selected>Complementary</option>
+              <option value="analogous">Analogous</option>
+              <option value="triadic">Triadic</option>
+              <option value="split">Split-Complementary</option>
+            </select>
+          </div>
+
+          <div class="fieldRow btnRow">
+            <button id="btnApplyHarmony" class="smallBtn">Apply to Colors</button>
+          </div>
         </div>
 
-        <div class="fieldRow" id="primaryColorRow">
-          <label for="primaryColor">Primary</label>
-          <input type="color" id="primaryColor" value="#7c5cff">
+        <!-- Color slot tabs -->
+        <div class="colorTabs" id="colorTabs">
+          <button class="colorTab active" id="tab_color1" data-slot="color1" type="button" style="background:#7c5cff">1</button>
+          <button class="colorTab" id="tab_color2" data-slot="color2" type="button" style="background:#38bdf8">2</button>
+          <button class="colorTab" id="tab_color3" data-slot="color3" type="button" style="background:#f472b6">3</button>
+          <button class="colorTab" id="tab_color4" data-slot="color4" type="button" style="background:#ffd257">4</button>
+          <button class="colorTab" id="tab_bg" data-slot="bg" type="button" style="background:#07080d">BG</button>
+          <button class="colorTab hidden" id="tab_bg2" data-slot="bg2" type="button" style="background:#1c2130">BG2</button>
         </div>
 
-        <div class="fieldRow" id="secondaryColorRow">
-          <label for="secondaryColor">Secondary</label>
-          <input type="color" id="secondaryColor" value="#ffd257">
+        <!-- Active color editor -->
+        <div class="activeColorPanel">
+          <div class="fieldRow">
+            <label id="activeColorLabel">Color 1</label>
+            <input type="color" id="activeColorInput" value="#7c5cff">
+          </div>
+
+          <div class="sliderRow">
+            <div class="sliderTop">
+              <label>Hue</label>
+              <span class="val" id="valHue">252</span>
+            </div>
+            <input type="range" id="hueSlider" min="0" max="360" step="1" value="252">
+          </div>
+
+          <div class="sliderRow">
+            <div class="sliderTop">
+              <label>Saturation</label>
+              <span class="val" id="valSat">100</span>
+            </div>
+            <input type="range" id="satSlider" min="0" max="100" step="1" value="100">
+          </div>
+
+          <div class="sliderRow">
+            <div class="sliderTop">
+              <label>Lightness</label>
+              <span class="val" id="valLight">68</span>
+            </div>
+            <input type="range" id="lightSlider" min="0" max="100" step="1" value="68">
+          </div>
+
+          <div class="sliderRow" id="opacityRow">
+            <div class="sliderTop">
+              <label>Opacity</label>
+              <span class="val" id="valOpacity">100</span>
+            </div>
+            <input type="range" id="opacitySlider" min="0" max="100" step="1" value="100">
+          </div>
         </div>
 
-        <div class="fieldRow" id="accentColorRow">
-          <label for="accentColor">Accent</label>
-          <input type="color" id="accentColor" value="#eef0f7">
+        <!-- Background style -->
+        <div class="subSection">
+          <div class="subTitle">Background</div>
+
+          <div class="fieldRow">
+            <label for="bgStyle">Style</label>
+            <select id="bgStyle">
+              <option value="solid" selected>Solid</option>
+              <option value="linear">Gradient — Linear</option>
+              <option value="radial">Gradient — Radial</option>
+            </select>
+          </div>
+
+          <div class="fieldRow hidden" id="bgDirRow">
+            <label for="bgDir">Direction</label>
+            <select id="bgDir">
+              <option value="to-bottom" selected>Top → Bottom</option>
+              <option value="to-top">Bottom → Top</option>
+              <option value="to-right">Left → Right</option>
+              <option value="to-left">Right → Left</option>
+              <option value="to-bottom-right">Diagonal ↘</option>
+              <option value="to-bottom-left">Diagonal ↙</option>
+              <option value="to-top-right">Diagonal ↗</option>
+              <option value="to-top-left">Diagonal ↖</option>
+            </select>
+          </div>
         </div>
 
-        <div class="fieldRow">
-          <label for="bgColor">Background</label>
-          <input type="color" id="bgColor" value="#07080d">
+        <!-- Saved custom palettes -->
+        <div class="subSection">
+          <div class="subTitle">Saved Custom Palettes</div>
+
+          <div class="fieldRow">
+            <label for="palettePresetList">Palettes</label>
+            <select id="palettePresetList">
+              <option value="">— none —</option>
+            </select>
+          </div>
+
+          <div class="fieldRow btnRow">
+            <button id="btnSavePalette" class="smallBtn">Save</button>
+            <button id="btnLoadPalette" class="smallBtn">Load</button>
+            <button id="btnDeletePalette" class="smallBtn danger">Delete</button>
+          </div>
         </div>
       </div>
 
