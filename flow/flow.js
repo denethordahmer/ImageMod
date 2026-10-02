@@ -123,8 +123,10 @@
       lineWidth: parseFloat(document.getElementById("lineWidth").value),
       opacity: parseFloat(document.getElementById("opacity").value),
       mode: document.getElementById("colorMode").value,
+      direction: document.getElementById("direction").value,
       color1: hexToRgb(document.getElementById("color1").value),
       color2: hexToRgb(document.getElementById("color2").value),
+      color3: hexToRgb(document.getElementById("color3").value),
       bgColor: document.getElementById("bgColor").value,
       bgTransparent: document.getElementById("bgTransparent").checked,
       size: document.getElementById("size").value
@@ -134,6 +136,32 @@
   function noiseScaleFor(fs) {
     // featureSize 1  => fine/noisy,  100 => large smooth swirls
     return 0.0065 - (fs - 1) * (0.0065 - 0.0006) / 99;
+  }
+
+  // --- color picker for a mode/direction/position ------------------------
+  function pickColor(s, x, y, W, H, rand) {
+    var t;
+    switch (s.direction) {
+      case "vertical": t = y / H; break;
+      case "diagonal": t = (x / W + y / H) / 2; break;
+      case "chaotic": t = rand(); break;
+      default: t = x / W; // horizontal
+    }
+    if (t < 0) t = 0;
+    if (t > 1) t = 1;
+
+    if (s.mode === "solid") return s.color1;
+    if (s.mode === "spectrum") {
+      var baseHue = rgbToHsl(s.color1[0], s.color1[1], s.color1[2])[0];
+      return hslToRgb((baseHue + t * 360 * 1.4) % 360, 72, 58);
+    }
+    // gradient: color1 -> color2
+    if (s.mode === "gradient") return lerpRgb(s.color1, s.color2, t);
+    // tricolor: color1 -> color2 -> color3
+    if (t < 0.5) {
+      return lerpRgb(s.color1, s.color2, t * 2);
+    }
+    return lerpRgb(s.color2, s.color3, (t - 0.5) * 2);
   }
 
   // --- render ------------------------------------------------------------
@@ -183,24 +211,12 @@
     ctx.lineWidth = s.lineWidth;
     ctx.globalAlpha = s.opacity;
 
-    var baseHue = rgbToHsl(s.color1[0], s.color1[1], s.color1[2])[0];
-
-    var c1 = s.color1, c2 = s.color2, mode = s.mode;
-
     for (var r = 0; r < rows; r++) {
       for (var c = 0; c < cols; c++) {
         var px = c * cellW + rand() * cellW;
         var py = r * cellH + rand() * cellH;
-        var t = px / W; // color position 0..1
 
-        var col;
-        if (mode === "solid") {
-          col = c1;
-        } else if (mode === "gradient") {
-          col = lerpRgb(c1, c2, t);
-        } else { // spectrum
-          col = hslToRgb((baseHue + t * 360 * 1.4) % 360, 72, 58);
-        }
+        var col = pickColor(s, px, py, W, H, rand);
 
         ctx.strokeStyle = "rgb(" + col[0] + "," + col[1] + "," + col[2] + ")";
         ctx.beginPath();
@@ -258,9 +274,9 @@
     });
   });
 
-  ["colorMode", "color1", "color2", "bgColor", "size"].forEach(function (id) {
+  ["colorMode", "direction", "color1", "color2", "color3", "bgColor", "size"].forEach(function (id) {
     document.getElementById(id).addEventListener("input", function () {
-      syncColor2();
+      syncDynamicControls();
       schedule();
     });
   });
@@ -271,11 +287,16 @@
   document.getElementById("btnGenerate").addEventListener("click", schedule);
   document.getElementById("btnExport").addEventListener("click", exportPNG);
 
-  function syncColor2() {
-    var show = document.getElementById("colorMode").value === "gradient";
-    document.getElementById("color2Row").classList.toggle("hidden", !show);
+  function syncDynamicControls() {
+    var mode = document.getElementById("colorMode").value;
+    var hasDirection = (mode === "gradient" || mode === "tricolor");
+    var showColor2 = (mode === "gradient" || mode === "tricolor");
+    var showColor3 = (mode === "tricolor");
+    document.getElementById("directionRow").classList.toggle("hidden", !hasDirection);
+    document.getElementById("color2Row").classList.toggle("hidden", !showColor2);
+    document.getElementById("color3Row").classList.toggle("hidden", !showColor3);
   }
 
-  syncColor2();
+  syncDynamicControls();
   render();
 })();
