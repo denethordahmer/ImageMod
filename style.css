@@ -56,6 +56,7 @@ a{ color: inherit; text-decoration: none; }
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  min-height: 100dvh;
   max-width: 640px;
   margin: 0 auto;
   padding: env(safe-area-inset-top) 16px calc(env(safe-area-inset-bottom) + 16px) 16px;
@@ -199,6 +200,7 @@ a{ color: inherit; text-decoration: none; }
   display: flex;
   flex-direction: column;
   height: 100vh;
+  height: 100dvh;
   max-width: 640px;
   margin: 0 auto;
   padding: env(safe-area-inset-top) 12px 0 12px;
