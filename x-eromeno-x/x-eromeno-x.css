@@ -1,0 +1,70 @@
+/* =========================================================================
+   x-eromeno-x — x-eromeno-x.css (override for this tool)
+   Loaded after the shared style.css.
+   ========================================================================= */
+
+.xEromEnoXPreview{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 46vh;
+  height: 46dvh;
+  min-height: 220px;
+  margin: 4px 0 8px;
+  padding: 8px;
+  border-radius: var(--radius-lg);
+  /* checkerboard so transparency is visible */
+  background-color: #0d1018;
+  background-image:
+    linear-gradient(45deg, #171b28 25%, transparent 25%),
+    linear-gradient(-45deg, #171b28 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #171b28 75%),
+    linear-gradient(-45deg, transparent 75%, #171b28 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  border: 1px solid var(--border);
+}
+
+#xEromEnoXCanvas{
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px -12px rgba(0,0,0,0.7);
+}
+
+.xEromEnoXSection{
+  padding: 12px 14px 4px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dimmer);
+}
+
+/* number + checkbox inputs (not styled in style.css) */
+.fieldRow input[type="number"]{
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 40%;
+  background: var(--panel-3);
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+.fieldRow input[type="number"]:focus{
+  outline: none;
+  border-color: var(--accent);
+}
+
+.fieldRow input[type="checkbox"]{
+  width: 22px;
+  height: 22px;
+  accent-color: var(--accent-bright);
+  cursor: pointer;
+  flex-shrink: 0;
+}
