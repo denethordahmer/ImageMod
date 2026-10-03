@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fern Forge — Art Engine</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="fern.css">
+</head>
+<body>
+
+<div class="toolApp">
+
+  <header class="toolTopBar">
+    <a class="toolBack" href="../index.html">‹ Back</a>
+    <h1 class="toolTitle">Fern Forge</h1>
+    <button class="toolAction" id="generateBtn">Generate</button>
+  </header>
+
+  <div class="toolView">
+
+    <section class="canvasWrap">
+      <canvas id="fernCanvas"></canvas>
+    </section>
+
+    <section class="panel">
+      <h2 class="panelTitle">Preset</h2>
+      <div class="chipRow" id="presetRow">
+        <button class="chip active" data-preset="tree">Tree</button>
+        <button class="chip" data-preset="fern">Fern</button>
+        <button class="chip" data-preset="bush">Bush</button>
+        <button class="chip" data-preset="coral">Coral</button>
+        <button class="chip" data-preset="willow">Willow</button>
+        <button class="chip" data-preset="winter">Winter</button>
+        <button class="chip" data-preset="vine">Vine</button>
+        <button class="chip" data-preset="snowflake">Snowflake</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panelTitle">Shape</h2>
+
+      <div class="sliderRow">
+        <div class="sliderTop">
+          <label for="depth">Depth</label>
+          <span class="val" id="depthVal">5</span>
+        </div>
+        <input type="range" id="depth" min="2" max="8" step="1" value="5">
+      </div>
+
+      <div class="sliderRow">
+        <div class="sliderTop">
+          <label for="angle">Angle</label>
+          <span class="val" id="angleVal">22°</span>
+        </div>
+        <input type="range" id="angle" min="6" max="50" step="1" value="22">
+      </div>
+
+      <div class="sliderRow">
+        <div class="sliderTop">
+          <label for="shrink">Length shrink</label>
+          <span class="val" id="shrinkVal">0.75</span>
+        </div>
+        <input type="range" id="shrink" min="55" max="90" step="1" value="75">
+      </div>
+
+      <div class="sliderRow">
+        <div class="sliderTop">
+          <label for="jitter">Jitter</label>
+          <span class="val" id="jitterVal">8</span>
+        </div>
+        <input type="range" id="jitter" min="0" max="25" step="1" value="8">
+      </div>
+
+      <div class="sliderRow">
+        <div class="sliderTop">
+          <label for="curve">Curve</label>
+          <span class="val" id="curveVal">16</span>
+        </div>
+        <input type="range" id="curve" min="0" max="40" step="1" value="16">
+      </div>
+
+      <div class="sliderRow">
+        <div class="sliderTop">
+          <label for="wild">Wildness</label>
+          <span class="val" id="wildVal">0</span>
+        </div>
+        <input type="range" id="wild" min="0" max="100" step="1" value="0">
+      </div>
+
+      <div class="fieldRow">
+        <label for="orientSelect">Orientation</label>
+        <select id="orientSelect">
+          <option value="up" selected>Upward</option>
+          <option value="down">Downward</option>
+          <option value="side">Sideways</option>
+          <option value="spread">Spreading wide</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panelTitle">Details</h2>
+
+      <div class="switchRow">
+        <label for="mirrorToggle">Mirror left/right</label>
+        <input type="checkbox" id="mirrorToggle" class="switchInput">
+      </div>
+
+      <div class="fieldRow">
+        <label for="accentSelect">Branch tips</label>
+        <select id="accentSelect">
+          <option value="none">None</option>
+          <option value="buds">Buds</option>
+          <option value="leaves" selected>Leaves</option>
+        </select>
+      </div>
+
+      <div class="fieldRow">
+        <label for="fillSelect">Draw style</label>
+        <select id="fillSelect">
+          <option value="lines" selected>Lines</option>
+          <option value="silhouette">Silhouette fill</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panelTitle">Colors</h2>
+
+      <div class="fieldRow">
+        <label for="lineColor">Base</label>
+        <input type="color" id="lineColor" value="#7c5cff">
+      </div>
+
+      <div class="fieldRow">
+        <label for="tipColor">Tip</label>
+        <input type="color" id="tipColor" value="#ffd257">
+      </div>
+
+      <div class="switchRow">
+        <label for="flowToggle">Color flow</label>
+        <input type="checkbox" id="flowToggle" class="switchInput" checked>
+      </div>
+
+      <div class="fieldRow">
+        <label for="bgMode">Background</label>
+        <select id="bgMode">
+          <option value="solid" selected>Solid</option>
+          <option value="gradient">Gradient</option>
+        </select>
+      </div>
+
+      <div class="fieldRow">
+        <label for="bgColor">Background 1</label>
+        <input type="color" id="bgColor" value="#07080d">
+      </div>
+
+      <div class="fieldRow hidden" id="bg2Row">
+        <label for="bgColor2">Background 2</label>
+        <input type="color" id="bgColor2" value="#14172a">
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panelTitle">Experience</h2>
+
+      <div class="switchRow">
+        <label for="animToggle">Growth animation</label>
+        <input type="checkbox" id="animToggle" class="switchInput" checked>
+      </div>
+
+      <div class="fieldRow">
+        <label for="seedInput">Seed</label>
+        <input type="text" id="seedInput" inputmode="numeric" value="0">
+      </div>
+
+      <div class="switchRow">
+        <label for="rememberToggle">Remember settings</label>
+        <input type="checkbox" id="rememberToggle" class="switchInput" checked>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panelTitle">Export</h2>
+
+      <div class="fieldRow">
+        <label for="sizeSelect">Size</label>
+        <select id="sizeSelect">
+          <option value="square">Square 900×900</option>
+          <option value="a17">Samsung A17 1080×2340</option>
+        </select>
+      </div>
+
+      <div class="fieldRow">
+        <label for="qualitySelect">Quality</label>
+        <select id="qualitySelect">
+          <option value="1">1×</option>
+          <option value="2">2×</option>
+          <option value="3">3×</option>
+        </select>
+      </div>
+    </section>
+
+    <div class="btnRow">
+      <button class="smallBtn" id="newSeedBtn">New Seed</button>
+      <button class="smallBtn" id="copySeedBtn">Copy Seed</button>
+    </div>
+
+  </div>
+
+  <footer class="exportBar">
+    <button class="exportBtn" id="pngBtn">PNG</button>
+    <button class="exportBtn primary" id="jpgBtn">JPG</button>
+  </footer>
+
+</div>
+
+<script src="fern.js"></script>
+</body>
+</html>
