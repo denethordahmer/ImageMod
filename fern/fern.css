@@ -1,0 +1,179 @@
+/* =========================================================================
+   FERN FORGE — fern.css
+   Tool-specific styles only. Shared look comes from ../style.css
+   ========================================================================= */
+
+.toolApp{
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+/* ---------- CANVAS PREVIEW ---------- */
+
+.canvasWrap{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 10px;
+  margin: 4px 0 12px;
+  overflow: hidden;
+}
+
+#fernCanvas{
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 46vh;
+  max-height: 46dvh;
+  border-radius: var(--radius);
+  background: #07080d;
+  touch-action: none;
+  box-shadow: 0 20px 60px -30px rgba(0,0,0,0.9);
+}
+
+/* ---------- PRESET CHIPS ---------- */
+
+.chipRow{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 12px 14px;
+}
+
+.chip{
+  width: 100%;
+  text-align: center;
+  background: var(--panel-3);
+  border: 1px solid var(--border-strong);
+  color: var(--text-dim);
+  border-radius: 999px;
+  padding: 10px 4px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: transform 0.08s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.chip:hover{
+  background: var(--panel-2);
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.chip:active{ transform: scale(0.96); }
+
+.chip.active{
+  background: linear-gradient(135deg, var(--accent), var(--accent-bright));
+  border-color: transparent;
+  color: #0a0b10;
+  box-shadow: 0 8px 24px -12px var(--accent-glow);
+}
+
+/* ---------- PANELS ---------- */
+
+.panel{
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.panelTitle{
+  margin: 0;
+  padding: 12px 14px 4px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dimmer);
+}
+
+/* ---------- ON/OFF SWITCHES ---------- */
+
+.switchRow{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.switchRow:last-child{ border-bottom: none; }
+
+.switchRow label{
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+  min-width: 0;
+}
+
+.switchInput{
+  -webkit-appearance: none;
+  appearance: none;
+  width: 48px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--panel-3);
+  border: 1px solid var(--border-strong);
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+  outline: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.switchInput::after{
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.switchInput:hover{ border-color: var(--accent); }
+
+.switchInput:checked{
+  background: var(--accent);
+  border-color: var(--accent-bright);
+}
+
+.switchInput:checked::after{
+  transform: translateX(20px);
+  background: #0a0b10;
+}
+
+/* ---------- SEED FIELD ---------- */
+
+#seedInput{
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- BUTTON ROW SPACING ---------- */
+
+.btnRow{
+  padding: 0 0 8px;
+}
+
+/* ---------- SMALL SCREENS ---------- */
+
+@media (max-width: 380px){
+  #fernCanvas{ max-height: 38vh; max-height: 38dvh; }
+  .chipRow{ grid-template-columns: repeat(3, 1fr); }
+  .chip{ font-size: 11px; padding: 9px 4px; }
+  .panelTitle{ font-size: 10px; }
+  .switchRow label{ font-size: 12px; }
+}
